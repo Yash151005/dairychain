@@ -1,0 +1,18 @@
+{
+  "accuracy": 1.0,
+  "balanced_accuracy": 1.0,
+  "total_samples": 55,
+  "wakeword_samples": 42,
+  "negative_samples": 13,
+  "n_mfcc": 13,
+  "max_frames": 311,
+  "sample_rate": 16000,
+  "n_fft": 512,
+  "hop_length": 256,
+  "threshold": 0.5,
+  "raw_threshold": 0.578201,
+  "score_floor": 0.185685,
+  "score_ceiling": 0.978577,
+  "raw_score_mean_wakeword": 0.916434,
+  "raw_score_mean_negative": 0.263934
+}

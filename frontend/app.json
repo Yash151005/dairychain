@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "DairyChain",
+    "slug": "smartshetakari",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "smartshetakari",
+    "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon-dairy.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0D3B1E"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "android": {
+      "package": "com.smartshetakari.app"
+    },
+    "ios": {
+      "bundleIdentifier": "com.smartshetakari.app"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "SmartShetakari",
+    "slug": "smartshetakari",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "smartshetakari",
+    "userInterfaceStyle": "automatic",
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "android": {
+      "package": "com.smartshetakari.app"
+    },
+    "ios": {
+      "bundleIdentifier": "com.smartshetakari.app"
+    }
+  }
+}
