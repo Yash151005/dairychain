@@ -1,0 +1,31 @@
+{
+  "name": "DairyChain",
+  "short_name": "DairyChain",
+  "description": "Smart Shetakari - Dairy management system",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0D3B1E",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "./assets/icon-dairy.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/icon-dairy.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "./assets/splash.png",
+      "sizes": "1080x1920",
+      "type": "image/png"
+    }
+  ]
+}

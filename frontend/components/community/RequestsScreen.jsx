@@ -189,6 +189,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.1,
     shadowRadius: 14,
+    boxShadow: "0 6px 14px rgba(208, 216, 208, 0.1)",
     elevation: 3,
   },
   requestTop: { flexDirection: "row", alignItems: "flex-start", gap: 12 },

@@ -13,16 +13,25 @@
       "backgroundColor": "#0D3B1E"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-av"
     ],
     "experiments": {
       "typedRoutes": true
     },
     "android": {
-      "package": "com.smartshetakari.app"
+      "package": "com.smartshetakari.app",
+      "versionCode": 1
     },
     "ios": {
       "bundleIdentifier": "com.smartshetakari.app"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "550e8400-e29b-41d4-a716-446655440000"
+      },
+      "apiBaseUrl": "http://localhost:8000"
     }
   }
 }

@@ -101,60 +101,99 @@ async def seed_users() -> list[dict]:
 
 async def seed_batches(users: list[dict]) -> list[dict]:
     farmer_map = {u["user_id"]: u for u in users if u["role"] == "farmer"}
-    batches = [
-        {
-            "batch_id": "BATCH-1001",
+    
+    # Create 25+ batches for realistic farmer dashboard data (past 7-14 days)
+    batches = []
+    batch_counter = 1001
+    
+    # Yash Patil - 8 batches (2 per day for 4 days)
+    yash_batches = [
+        ("morning", 0, 6, 540, 3.9, 8.4, 0.5, "Pure", "Green", 96.4),
+        ("evening", 0, 18, 520, 3.8, 8.3, 0.6, "Pure", "Green", 95.2),
+        ("morning", 1, 6, 550, 3.7, 8.2, 0.7, "Pure", "Green", 94.1),
+        ("evening", 1, 18, 530, 3.8, 8.3, 0.5, "Pure", "Green", 96.0),
+        ("morning", 2, 6, 560, 4.0, 8.5, 0.4, "Pure", "Green", 97.5),
+        ("evening", 2, 18, 540, 3.9, 8.4, 0.5, "Pure", "Green", 96.2),
+        ("morning", 3, 6, 590, 3.6, 8.1, 0.8, "Pure", "Green", 93.8),
+        ("evening", 3, 18, 510, 3.9, 8.4, 0.5, "Pure", "Green", 96.1),
+    ]
+    for shift, day, hour, qty, fat, snf, water, status, safety, confidence in yash_batches:
+        batch_id = f"BATCH-{batch_counter}"
+        collection_time = utc_now(day, 24 - hour)
+        batches.append({
+            "batch_id": batch_id,
             "farmer_id": "yash.patil@smartshetakari.com",
             "farm_name": "Patil Dairy Farm",
-            "quality_status": "Pure",
-            "safety_index": "Green",
-            "fat_percentage": 3.9,
-            "snf_percentage": 8.4,
-            "water_content": 0.5,
-            "quantity_litres": 540,
-            "confidence_score": 96.4,
-            "collection_time": utc_now(0, 6),
-        },
-        {
-            "batch_id": "BATCH-1002",
+            "quality_status": status,
+            "safety_index": safety,
+            "fat_percentage": fat,
+            "snf_percentage": snf,
+            "water_content": water,
+            "quantity_litres": qty,
+            "confidence_score": confidence,
+            "collection_time": collection_time,
+            "shift": shift,
+        })
+        batch_counter += 1
+    
+    # Ravi Patil - 7 batches
+    ravi_batches = [
+        (0, 6, 470, 3.4, 8.0, 1.2, "Suspicious", "Yellow", 82.1),
+        (0, 18, 480, 3.5, 8.1, 1.0, "Pure", "Green", 91.3),
+        (1, 6, 460, 3.6, 8.2, 0.8, "Pure", "Green", 93.5),
+        (1, 18, 490, 3.5, 8.0, 1.1, "Pure", "Green", 90.8),
+        (2, 6, 475, 3.7, 8.3, 0.7, "Pure", "Green", 94.2),
+        (3, 6, 465, 3.6, 8.1, 0.9, "Pure", "Green", 92.1),
+        (3, 18, 485, 3.5, 8.0, 1.0, "Pure", "Green", 91.5),
+    ]
+    for day, hour, qty, fat, snf, water, status, safety, confidence in ravi_batches:
+        batch_id = f"BATCH-{batch_counter}"
+        collection_time = utc_now(day, 24 - hour)
+        batches.append({
+            "batch_id": batch_id,
             "farmer_id": "ravi.patil@smartshetakari.com",
             "farm_name": "Green Valley Dairy",
-            "quality_status": "Suspicious",
-            "safety_index": "Yellow",
-            "fat_percentage": 3.4,
-            "snf_percentage": 8.0,
-            "water_content": 1.2,
-            "quantity_litres": 470,
-            "confidence_score": 82.1,
-            "collection_time": utc_now(1, 3),
-        },
-        {
-            "batch_id": "BATCH-1003",
+            "quality_status": status,
+            "safety_index": safety,
+            "fat_percentage": fat,
+            "snf_percentage": snf,
+            "water_content": water,
+            "quantity_litres": qty,
+            "confidence_score": confidence,
+            "collection_time": collection_time,
+        })
+        batch_counter += 1
+    
+    # Sneha Jadhav - 10 batches (excellent quality)
+    sneha_batches = [
+        (0, 6, 620, 4.1, 8.7, 0.3, "Pure", "Green", 98.2),
+        (0, 18, 610, 4.2, 8.8, 0.2, "Pure", "Green", 99.1),
+        (1, 6, 630, 4.0, 8.6, 0.4, "Pure", "Green", 97.8),
+        (1, 18, 615, 4.1, 8.7, 0.3, "Pure", "Green", 98.5),
+        (2, 6, 625, 4.3, 8.9, 0.2, "Pure", "Green", 99.3),
+        (2, 18, 620, 4.1, 8.7, 0.3, "Pure", "Green", 98.4),
+        (3, 6, 635, 4.2, 8.8, 0.2, "Pure", "Green", 99.0),
+        (3, 18, 618, 4.0, 8.6, 0.4, "Pure", "Green", 97.6),
+        (4, 6, 628, 4.1, 8.7, 0.3, "Pure", "Green", 98.3),
+        (4, 18, 622, 4.0, 8.6, 0.4, "Pure", "Green", 97.9),
+    ]
+    for day, hour, qty, fat, snf, water, status, safety, confidence in sneha_batches:
+        batch_id = f"BATCH-{batch_counter}"
+        collection_time = utc_now(day, 24 - hour)
+        batches.append({
+            "batch_id": batch_id,
             "farmer_id": "sneha.jadhav@smartshetakari.com",
             "farm_name": "Jadhav Milk Unit",
-            "quality_status": "Pure",
-            "safety_index": "Green",
-            "fat_percentage": 4.1,
-            "snf_percentage": 8.7,
-            "water_content": 0.3,
-            "quantity_litres": 620,
-            "confidence_score": 98.2,
-            "collection_time": utc_now(2, 4),
-        },
-        {
-            "batch_id": "BATCH-1004",
-            "farmer_id": "yash.patil@smartshetakari.com",
-            "farm_name": "Patil Dairy Farm",
-            "quality_status": "Adulterated",
-            "safety_index": "Red",
-            "fat_percentage": 2.9,
-            "snf_percentage": 7.4,
-            "water_content": 2.8,
-            "quantity_litres": 390,
-            "confidence_score": 61.7,
-            "collection_time": utc_now(3, 2),
-        },
-    ]
+            "quality_status": status,
+            "safety_index": safety,
+            "fat_percentage": fat,
+            "snf_percentage": snf,
+            "water_content": water,
+            "quantity_litres": qty,
+            "confidence_score": confidence,
+            "collection_time": collection_time,
+        })
+        batch_counter += 1
 
     for batch in batches:
         block_data = {
@@ -185,94 +224,117 @@ async def seed_batches(users: list[dict]) -> list[dict]:
 
 
 async def seed_sensors(batches: list[dict]) -> None:
-    sensor_rows = [
-        {
-            "sensor_id": "sensor-001",
-            "batch_id": "BATCH-1001",
-            "temperature": 4.2,
-            "humidity": 61,
-            "timestamp": utc_now(0, 1),
-        },
-        {
-            "sensor_id": "sensor-002",
-            "batch_id": "BATCH-1002",
-            "temperature": 7.8,
-            "humidity": 66,
-            "timestamp": utc_now(1, 1),
-        },
-        {
-            "sensor_id": "sensor-003",
-            "batch_id": "BATCH-1003",
-            "temperature": 5.1,
-            "humidity": 58,
-            "timestamp": utc_now(0),
-        },
-    ]
-
+    sensor_rows = []
+    
+    # Add sensors for a sampling of batches (every 3rd batch)
+    for i, batch in enumerate(batches):
+        if i % 3 == 0:
+            sensor_id = f"sensor-{batch['batch_id']}"
+            # Realistic temperature based on batch date and time
+            base_temp = 4.0 if "morning" in batch.get("shift", "morning") else 6.0
+            temp_variance = (i % 5) * 0.2  # Small variation
+            sensor_rows.append({
+                "sensor_id": sensor_id,
+                "batch_id": batch["batch_id"],
+                "temperature": base_temp + temp_variance,
+                "humidity": 55 + (i % 15),
+                "timestamp": batch["collection_time"],
+            })
+    
     for row in sensor_rows:
         await upsert_one(sensor_collection, {"sensor_id": row["sensor_id"]}, row)
 
 
 async def seed_payments(users: list[dict], batches: list[dict]) -> None:
-    payments = [
-        {
-            "payment_id": "PAY-1001",
-            "farmer_id": "yash.patil@smartshetakari.com",
-            "batch_id": "BATCH-1001",
-            "amount": 5400,
-            "status": "Paid",
-            "paid_at": utc_now(0, 4),
-        },
-        {
-            "payment_id": "PAY-1002",
-            "farmer_id": "ravi.patil@smartshetakari.com",
-            "batch_id": "BATCH-1002",
-            "amount": 4700,
-            "status": "Released",
-            "paid_at": utc_now(1, 5),
-        },
-        {
-            "payment_id": "PAY-1003",
-            "farmer_id": "sneha.jadhav@smartshetakari.com",
-            "batch_id": "BATCH-1003",
-            "amount": 6200,
-            "status": "Pending",
-            "paid_at": utc_now(2),
-        },
-    ]
-
+    payments = []
+    payment_counter = 1001
+    
+    # Create payments for batches (every 2-3 batches = one payment)
+    payment_statuses = ["Paid", "Released", "Pending", "Processing"]
+    
+    for i, batch in enumerate(batches):
+        if i % 2 == 0:  # Every 2 batches
+            payment_id = f"PAY-{payment_counter}"
+            payment_counter += 1
+            
+            # Calculate payment amount based on quantity and quality
+            base_rate = 10  # ₹ per liter
+            quality_multiplier = {
+                "Pure": 1.0,
+                "Suspicious": 0.8,
+                "Adulterated": 0.5,
+            }
+            
+            qty = batch.get("quantity_litres", 500)
+            quality = batch.get("quality_status", "Pure")
+            amount = int(qty * base_rate * quality_multiplier.get(quality, 1.0))
+            
+            # Status distribution
+            status_idx = i % len(payment_statuses)
+            status = payment_statuses[status_idx]
+            
+            # Payment date varies by batch date
+            day_offset = int(batch["collection_time"].strftime("%d")) if hasattr(batch["collection_time"], "strftime") else 0
+            paid_at = batch["collection_time"] + timedelta(days=1)
+            
+            payments.append({
+                "payment_id": payment_id,
+                "farmer_id": batch["farmer_id"],
+                "batch_id": batch["batch_id"],
+                "amount": amount,
+                "status": status,
+                "paid_at": paid_at,
+                "created_at": batch["collection_time"],
+            })
+    
     for payment in payments:
         await upsert_one(payment_collection, {"payment_id": payment["payment_id"]}, payment)
 
 
 async def seed_expenses() -> None:
-    expenses = [
-        {
-            "expense_id": "EXP-1001",
-            "farmer_id": "yash.patil@smartshetakari.com",
-            "amount": 900,
-            "category": "Feed",
-            "note": "Cattle feed and supplements",
-            "created_at": utc_now(0, 8),
-        },
-        {
-            "expense_id": "EXP-1002",
-            "farmer_id": "ravi.patil@smartshetakari.com",
-            "amount": 1200,
-            "category": "Transport",
-            "note": "Milk transport and storage",
-            "created_at": utc_now(1, 7),
-        },
-        {
-            "expense_id": "EXP-1003",
-            "farmer_id": "sneha.jadhav@smartshetakari.com",
-            "amount": 750,
-            "category": "Medicine",
-            "note": "Veterinary care and health check",
-            "created_at": utc_now(2, 9),
-        },
-    ]
-
+    expenses = []
+    expense_counter = 1001
+    
+    expense_data = {
+        "yash.patil@smartshetakari.com": [
+            ("Feed", 900, "Cattle feed and supplements", 0),
+            ("Medicine", 500, "Veterinary antibiotic injection", 1),
+            ("Feed", 1200, "Green fodder purchase", 2),
+            ("Transport", 300, "Milk collection transport", 3),
+            ("Equipment", 2500, "Milking machine maintenance", 4),
+            ("Labor", 800, "Farm helper wages", 5),
+            ("Electricity", 400, "Monthly electricity bill", 6),
+        ],
+        "ravi.patil@smartshetakari.com": [
+            ("Transport", 1200, "Milk transport and storage", 1),
+            ("Feed", 1100, "Concentrate feed", 2),
+            ("Medicine", 750, "Veterinary checkup", 3),
+            ("Equipment", 600, "Bucket and utensil repair", 4),
+            ("Labor", 900, "Farm worker wages", 5),
+        ],
+        "sneha.jadhav@smartshetakari.com": [
+            ("Medicine", 750, "Veterinary care and health check", 2),
+            ("Feed", 1500, "Premium cattle feed", 3),
+            ("Equipment", 1800, "Cold storage repair", 4),
+            ("Labor", 1000, "Farm helper wages", 5),
+            ("Transport", 400, "Milk transport", 6),
+            ("Feed", 800, "Mineral and vitamin supplements", 7),
+        ],
+    }
+    
+    for farmer_id, items in expense_data.items():
+        for category, amount, note, day_offset in items:
+            expense_id = f"EXP-{expense_counter}"
+            expense_counter += 1
+            expenses.append({
+                "expense_id": expense_id,
+                "farmer_id": farmer_id,
+                "amount": amount,
+                "category": category,
+                "note": note,
+                "created_at": utc_now(day_offset, 10),
+            })
+    
     for expense in expenses:
         await upsert_one(expense_collection, {"expense_id": expense["expense_id"]}, expense)
 
@@ -281,10 +343,11 @@ async def seed_alerts() -> None:
     alerts = [
         {
             "alert_id": "ALERT-1001",
-            "batch_id": "BATCH-1004",
+            "batch_id": "BATCH-1002",
+            "farmer_id": "ravi.patil@smartshetakari.com",
             "alert_type": "quality",
             "severity": "high",
-            "message": "Adulteration detected in batch BATCH-1004",
+            "message": "Suspicious quality detected - water content above 1%",
             "sms_sent": False,
             "resolved": False,
             "created_at": utc_now(0, 2),
@@ -292,12 +355,46 @@ async def seed_alerts() -> None:
         {
             "alert_id": "ALERT-1002",
             "batch_id": "BATCH-1002",
+            "farmer_id": "ravi.patil@smartshetakari.com",
             "alert_type": "temperature",
             "severity": "medium",
-            "message": "Temperature slightly above the ideal range",
+            "message": "Temperature slightly above the ideal range (7.8°C)",
             "sms_sent": True,
             "resolved": True,
             "created_at": utc_now(1, 4),
+        },
+        {
+            "alert_id": "ALERT-1003",
+            "batch_id": None,
+            "farmer_id": "yash.patil@smartshetakari.com",
+            "alert_type": "payment",
+            "severity": "medium",
+            "message": "Payment pending for 2 batches - total ₹5,920",
+            "sms_sent": True,
+            "resolved": False,
+            "created_at": utc_now(1, 8),
+        },
+        {
+            "alert_id": "ALERT-1004",
+            "batch_id": None,
+            "farmer_id": "sneha.jadhav@smartshetakari.com",
+            "alert_type": "equipment",
+            "severity": "low",
+            "message": "Scheduled maintenance for cold storage unit",
+            "sms_sent": False,
+            "resolved": False,
+            "created_at": utc_now(2, 10),
+        },
+        {
+            "alert_id": "ALERT-1005",
+            "batch_id": None,
+            "farmer_id": "ravi.patil@smartshetakari.com",
+            "alert_type": "quality_trend",
+            "severity": "medium",
+            "message": "Quality improving - 3 consecutive pure batches detected",
+            "sms_sent": True,
+            "resolved": True,
+            "created_at": utc_now(2, 12),
         },
     ]
 
@@ -306,90 +403,105 @@ async def seed_alerts() -> None:
 
 
 async def seed_tokens(batches: list[dict]) -> None:
-    tokens = [
-        {
-            "token_id": "TOK-1001",
-            "farmer_id": "yash.patil@smartshetakari.com",
-            "tokens_earned": 35,
-            "reason": "Pure milk batch bonus",
-            "batch_id": "BATCH-1001",
-            "redeemed": False,
-            "earned_at": utc_now(0, 3),
-        },
-        {
-            "token_id": "TOK-1002",
-            "farmer_id": "sneha.jadhav@smartshetakari.com",
-            "tokens_earned": 28,
-            "reason": "Consistent quality score",
-            "batch_id": "BATCH-1003",
-            "redeemed": True,
-            "earned_at": utc_now(2, 5),
-        },
-    ]
-
+    tokens = []
+    token_counter = 1001
+    
+    # Award tokens for high-quality batches (quality >= 95%)
+    for batch in batches:
+        confidence = batch.get("confidence_score", 0)
+        quality = batch.get("quality_status", "Pure")
+        
+        if quality == "Pure" and confidence >= 95:
+            tokens_earned = int(confidence / 5)  # ~20 tokens for 95% confidence
+            token_id = f"TOK-{token_counter}"
+            token_counter += 1
+            
+            tokens.append({
+                "token_id": token_id,
+                "farmer_id": batch["farmer_id"],
+                "tokens_earned": tokens_earned,
+                "reason": f"High quality batch bonus (confidence: {confidence}%)",
+                "batch_id": batch["batch_id"],
+                "redeemed": token_counter % 3 == 0,  # Some redeemed, some not
+                "earned_at": batch["collection_time"],
+            })
+    
     for token in tokens:
         await upsert_one(token_collection, {"token_id": token["token_id"]}, token)
 
 
 async def seed_feedback() -> None:
-    feedback_rows = [
-        {
-            "feedback_id": "FB-1001",
-            "batch_id": "BATCH-1001",
-            "user_id": "admin@smartshetakari.com",
-            "rating": 5,
-            "comment": "Excellent quality and fast delivery.",
-            "submitted_at": utc_now(0, 5),
-        },
-        {
-            "feedback_id": "FB-1002",
-            "batch_id": "BATCH-1002",
-            "user_id": "yash.patil@smartshetakari.com",
-            "rating": 4,
-            "comment": "Good monitoring, keep the temperature lower.",
-            "submitted_at": utc_now(1, 8),
-        },
+    feedback_rows = []
+    feedback_counter = 1001
+    
+    feedback_data = [
+        ("BATCH-1001", "admin@smartshetakari.com", 5, "Excellent quality and fast delivery."),
+        ("BATCH-1002", "yash.patil@smartshetakari.com", 4, "Good monitoring, keep the temperature lower."),
+        ("BATCH-1003", "admin@smartshetakari.com", 5, "Outstanding consistency and purity."),
+        ("BATCH-1004", "yash.patil@smartshetakari.com", 3, "Need to improve quality control."),
+        ("BATCH-1006", "ravi.patil@smartshetakari.com", 4, "Good service, timely collection."),
+        ("BATCH-1010", "sneha.jadhav@smartshetakari.com", 5, "Perfect milk quality every time."),
     ]
+    
+    for batch_id, user_id, rating, comment in feedback_data:
+        feedback_id = f"FB-{feedback_counter}"
+        feedback_counter += 1
+        feedback_rows.append({
+            "feedback_id": feedback_id,
+            "batch_id": batch_id,
+            "user_id": user_id,
+            "rating": rating,
+            "comment": comment,
+            "submitted_at": utc_now(feedback_counter % 5, 8),
+        })
 
     for feedback in feedback_rows:
         await upsert_one(feedback_collection, {"feedback_id": feedback["feedback_id"]}, feedback)
 
 
 async def seed_transport() -> None:
-    transport_rows = [
-        {
-            "transport_id": "TR-1001",
-            "vehicle_number": "MH12AB1234",
-            "batch_id": "BATCH-1001",
-            "driver_name": "Suresh Patil",
-            "status": "In Transit",
-            "current_location": "Pune Depot",
-            "last_updated": utc_now(0, 1),
-        },
-        {
-            "transport_id": "TR-1002",
-            "vehicle_number": "MH14CD5678",
-            "batch_id": "BATCH-1003",
-            "driver_name": "Ramesh Jadhav",
-            "status": "Delivered",
-            "current_location": "Mumbai Processing Plant",
-            "last_updated": utc_now(1, 2),
-        },
+    transport_rows = []
+    transport_counter = 1001
+    
+    vehicle_data = [
+        ("MH12AB1234", "Suresh Patil", "yash.patil@smartshetakari.com"),
+        ("MH14CD5678", "Ramesh Jadhav", "sneha.jadhav@smartshetakari.com"),
+        ("MH15EF9012", "Vikram Sharma", "ravi.patil@smartshetakari.com"),
     ]
-
+    
+    statuses = ["In Transit", "Delivered", "Picked Up", "At Depot"]
+    locations = ["Pune Depot", "Nashik Collection", "Mumbai Processing Plant", "Kolhapur Station"]
+    
+    for idx, (vehicle, driver, farmer_id) in enumerate(vehicle_data):
+        transport_id = f"TR-{transport_counter}"
+        transport_counter += 1
+        
+        status = statuses[idx % len(statuses)]
+        location = locations[idx % len(locations)]
+        
+        transport_rows.append({
+            "transport_id": transport_id,
+            "vehicle_number": vehicle,
+            "farmer_id": farmer_id,
+            "driver_name": driver,
+            "status": status,
+            "current_location": location,
+            "last_updated": utc_now(idx, idx + 6),
+        })
+    
     for transport in transport_rows:
         await upsert_one(transport_collection, {"transport_id": transport["transport_id"]}, transport)
 
 
 async def seed_qr_codes(batches: list[dict]) -> None:
-    for batch in batches:
+    for i, batch in enumerate(batches):
         qr_record = {
             "qr_id": f"QR-{batch['batch_id']}",
             "batch_id": batch["batch_id"],
             "qr_image_url": f"/qr/{batch['batch_id']}.png",
-            "scan_count": 4 if batch["batch_id"] == "BATCH-1001" else 1,
-            "last_scanned": utc_now(0, 1),
-            "created_at": utc_now(0, 6),
+            "scan_count": (i % 8) + 1,  # 1-8 scans per QR code
+            "last_scanned": utc_now(i % 4, (i * 3) % 24),
+            "created_at": batch["collection_time"],
         }
         await upsert_one(qr_collection, {"qr_id": qr_record["qr_id"]}, qr_record)
 

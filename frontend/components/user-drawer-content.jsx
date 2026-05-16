@@ -72,10 +72,19 @@ function isRouteActive(pathname, route) {
 }
 
 function qualityColor(quality) {
-  const q = (quality || "").toLowerCase();
-  if (q === "good" || q === "safe") return "#4ade80";
-  if (q === "fair" || q === "moderate") return "#fbbf24";
-  if (q === "poor" || q === "unsafe") return "#f87171";
+  let q = "";
+  if (typeof quality === "string") {
+    q = quality;
+  } else if (quality && typeof quality === "object") {
+    // Handle object by extracting string representation
+    q = String(quality?.quality || quality?.name || quality?.value || "");
+  } else if (quality) {
+    q = String(quality);
+  }
+  const normalized = (q || "").toLowerCase();
+  if (normalized === "good" || normalized === "safe") return "#4ade80";
+  if (normalized === "fair" || normalized === "moderate") return "#fbbf24";
+  if (normalized === "poor" || normalized === "unsafe") return "#f87171";
   return "rgba(255,255,255,0.6)";
 }
 

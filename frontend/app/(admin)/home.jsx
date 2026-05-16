@@ -184,7 +184,7 @@ export default function AdminHome() {
 
       <View style={styles.sectionHeader}>
         <View style={styles.sectionBadge}>
-          <Ionicons name="sparkles" size={13} color="#ffffff" />
+          <Ionicons name="star" size={13} color="#ffffff" />
           <Text style={styles.sectionBadgeText}>Admin Smart Tools</Text>
         </View>
         <Text style={styles.sectionTitle}>Focused admin access</Text>

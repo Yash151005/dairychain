@@ -40,7 +40,7 @@ export default function AppToast({ message, type = "info" }) {
   const theme = toastThemeMap[type] || toastThemeMap.info;
 
   return (
-    <View style={styles.toastWrap} pointerEvents="none">
+    <View style={styles.toastWrap}>
       <View style={[styles.toast, theme.container]}>
         <View style={[styles.toastAccent, theme.accent]} />
         <View style={[styles.toastIconCircle, theme.iconCircle]}>
@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
     left: 16,
     right: 16,
     zIndex: 20,
+    pointerEvents: "none",
   },
   toast: {
     flexDirection: "row",
@@ -72,6 +73,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.12,
     shadowRadius: 16,
+    boxShadow: "0 10px 16px rgba(0, 0, 0, 0.12)",
     elevation: 6,
   },
   toastAccent: {

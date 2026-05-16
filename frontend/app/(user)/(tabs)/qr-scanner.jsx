@@ -13,7 +13,15 @@ import {
 import { qrApi } from "../../../utils/api";
 
 function qualityColor(q) {
-  const s = (q || "").toLowerCase();
+  let value = "";
+  if (typeof q === "string") {
+    value = q;
+  } else if (q && typeof q === "object") {
+    value = String(q?.quality || q?.name || q?.value || "");
+  } else if (q) {
+    value = String(q);
+  }
+  const s = (value || "").toLowerCase();
   if (s.includes("pure") || s.includes("good")) return "#2e7d32";
   if (s.includes("suspicious") || s.includes("fair")) return "#f59e0b";
   if (s.includes("adulterated") || s.includes("poor")) return "#dc2626";
@@ -21,7 +29,15 @@ function qualityColor(q) {
 }
 
 function safetyColor(s) {
-  const v = (s || "").toLowerCase();
+  let safetyVal = "";
+  if (typeof s === "string") {
+    safetyVal = s;
+  } else if (s && typeof s === "object") {
+    safetyVal = String(s?.safety || s?.name || s?.value || "");
+  } else if (s) {
+    safetyVal = String(s);
+  }
+  const v = (safetyVal || "").toLowerCase();
   if (v === "green") return "#2e7d32";
   if (v === "yellow") return "#f59e0b";
   if (v === "red") return "#dc2626";

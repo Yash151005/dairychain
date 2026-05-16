@@ -87,7 +87,18 @@ def _infer_language(prompt: str) -> str:
 
 
 def _local_reply_for_prompt(prompt: str) -> str:
-    text = _normalize_text(prompt)
+    # Extract just the user's current question from the prompt
+    # The prompt is built as: "You are answering... Current question: <message>"
+    question = prompt
+    
+    # Try to extract "Current question:" part
+    if "Current question:" in prompt or "current question:" in prompt:
+        parts = prompt.lower().split("current question:")
+        if len(parts) > 1:
+            question = parts[-1].strip()
+    
+    text = _normalize_text(question)
+    print(f"[AI DEBUG] Using local reply for: {text}")
 
     keyword_groups = [
         ("greeting", ["hello", "hi", "namaste", "namaskar", "hey"]),
@@ -107,11 +118,14 @@ def _local_reply_for_prompt(prompt: str) -> str:
 
     for intent, keywords in keyword_groups:
         if any(keyword in text for keyword in keywords):
+            print(f"[AI DEBUG] Matched intent: {intent}")
             return LOCAL_REPLIES[intent]
 
     if "?" not in text and len(text.split()) <= 2:
+        print(f"[AI DEBUG] Matched intent: greeting (short text without question mark)")
         return LOCAL_REPLIES["greeting"]
 
+    print(f"[AI DEBUG] Matched intent: default")
     return LOCAL_REPLIES["default"]
 
 
@@ -211,6 +225,9 @@ async def _call_ai(messages: list[dict[str, str]]) -> dict[str, Any]:
     if not api_key:
         raise ValueError("AI API key is not configured. Set AI_API_KEY, OPENAI_API_KEY, NVIDIA_API_KEY, or CLAUDE_API_KEY.")
 
+    print(f"[AI DEBUG] API Key resolved: {api_key[:50]}...")
+    print(f"[AI DEBUG] Calling NVIDIA API at {settings.AI_API_URL}")
+
     payload = {
         "model": settings.AI_MODEL,
         "messages": messages,
@@ -235,15 +252,21 @@ async def _call_ai(messages: list[dict[str, str]]) -> dict[str, Any]:
                 headers=headers,
                 json=payload,
             )
+            print(f"[AI DEBUG] API Response Status: {response.status_code}")
         except httpx.HTTPError as exc:
+            print(f"[AI DEBUG] HTTP Error: {exc}")
             raise ValueError(f"AI provider request failed: {exc}") from exc
 
     if response.status_code >= 400:
+        error_text = response.text[:500]
+        print(f"[AI DEBUG] API Error Response: {error_text}")
         raise ValueError(
-            f"AI provider returned {response.status_code}: {response.text[:500]}"
+            f"AI provider returned {response.status_code}: {error_text}"
         )
 
-    return response.json()
+    response_json = response.json()
+    print(f"[AI DEBUG] API Response: {json.dumps(response_json, ensure_ascii=False)[:200]}...")
+    return response_json
 
 
 async def generate_reply(prompt: str) -> str:
@@ -264,8 +287,11 @@ async def generate_reply(prompt: str) -> str:
                 {"role": "user", "content": prompt},
             ]
         )
-    except ValueError:
-        return _local_reply_for_prompt(prompt)
+    except ValueError as e:
+        print(f"[AI DEBUG] NVIDIA API failed, falling back to local: {e}")
+        reply = _local_reply_for_prompt(prompt)
+        print(f"[AI DEBUG] Local reply selected: {reply[:100]}...")
+        return reply
 
     content = _extract_message_content(response_data)
     if content is None:

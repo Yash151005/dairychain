@@ -1,0 +1,17 @@
+{
+  "name": "DairyChain",
+  "displayName": "DairyChain",
+  "version": "1.0.0",
+  "description": "Smart Dairy Management App",
+  "bundleIdentifier": "com.dairychain.app",
+  "bundleUrl": "http://YOUR_IP:8081",
+  "splashScreen": "./assets/splash.png",
+  "icon": "./assets/icon-dairy.png",
+  "permissions": [
+    "INTERNET",
+    "ACCESS_NETWORK_STATE"
+  ],
+  "orientation": "portrait",
+  "minSdkVersion": 24,
+  "targetSdkVersion": 34
+}

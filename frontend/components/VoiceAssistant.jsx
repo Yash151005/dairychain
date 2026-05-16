@@ -10,7 +10,7 @@
  *   RESPONDING  → TTS done           → IDLE
  *
  * Wake word detection:
- *   Uses the model.tflite in assets/voice_model/ via expo-av audio
+ *   Uses the model.tflite in assets/voice_model/ with expo-av recording
  *   sampling + a lightweight JS MFCC approach.
  *   The .tflite model was trained for "Namskar DairyMitra".
  *
@@ -89,6 +89,7 @@ const RECORDING_OPTIONS = {
   },
   ios: {
     extension: ".m4a",
+    outputFormat: Audio.IOSOutputFormat.MPEG4AAC,
     audioQuality: Audio.IOSAudioQuality.MEDIUM,
     sampleRate: 16000,
     numberOfChannels: 1,
@@ -279,10 +280,15 @@ export default function VoiceAssistant({ visible = false, onClose }) {
   async function finaliseRecording() {
     clearTimeout(recordTimerRef.current);
 
+    if (!recordingRef.current) {
+      return;
+    }
+
     let uri = null;
     try {
-      await recordingRef.current.stopAndUnloadAsync();
-      uri = recordingRef.current.getURI();
+      const activeRecording = recordingRef.current;
+      await activeRecording.stopAndUnloadAsync();
+      uri = activeRecording.getURI();
       recordingRef.current = null;
     } catch (err) {
       setError("Recording failed: " + (err?.message || ""));
@@ -290,7 +296,10 @@ export default function VoiceAssistant({ visible = false, onClose }) {
       return;
     }
 
-    await Audio.setAudioModeAsync({ allowsRecordingIOS: false });
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+      playsInSilentModeIOS: true,
+    });
 
     if (!uri) {
       setError("No audio captured.");

@@ -31,26 +31,26 @@ let audioObjectUrl = null;
 let nativePlayer = null;
 let nativePlayerSubscription = null;
 let nativeAudioUri = null;
-let expoAudioModule = undefined;
+let expoAvModule = undefined;
 let expoFileSystemModule = undefined;
 
-const getExpoAudio = () => {
+const getExpoAv = () => {
   if (Platform.OS === "web") {
     return null;
   }
 
-  if (expoAudioModule !== undefined) {
-    return expoAudioModule;
+  if (expoAvModule !== undefined) {
+    return expoAvModule;
   }
 
   try {
-    expoAudioModule = require("expo-audio");
+    expoAvModule = require("expo-av");
   } catch (error) {
-    console.warn("expo-audio is unavailable, falling back to expo-speech.", error);
-    expoAudioModule = null;
+    console.warn("expo-av is unavailable, falling back to expo-speech.", error);
+    expoAvModule = null;
   }
 
-  return expoAudioModule;
+  return expoAvModule;
 };
 
 const getExpoFileSystem = () => {
@@ -78,35 +78,6 @@ const getBrowserAudioConstructor = () => {
   }
 
   return typeof globalThis.Audio === "function" ? globalThis.Audio : null;
-};
-
-const isLegacyExpoAudioCtorError = (error) => {
-  const message = error?.message || "";
-  return (
-    message.includes("Received 4 arguments, but 3 was expected") ||
-    message.includes("received 4 arguments, but 3 was expected")
-  );
-};
-
-const createNativeAudioPlayerCompat = (ExpoAudio, source, options = {}) => {
-  try {
-    return ExpoAudio.createAudioPlayer(source, options);
-  } catch (error) {
-    if (!isLegacyExpoAudioCtorError(error) || !ExpoAudio?.AudioModule?.AudioPlayer) {
-      throw error;
-    }
-
-    const {
-      updateInterval = 500,
-      keepAudioSessionActive = false,
-    } = options;
-
-    return new ExpoAudio.AudioModule.AudioPlayer(
-      source,
-      updateInterval,
-      keepAudioSessionActive
-    );
-  }
 };
 
 const nextPlaybackId = () => {
@@ -178,11 +149,11 @@ const cleanupNativeAudio = async () => {
 
   if (player) {
     try {
-      player.pause();
+      await player.pauseAsync();
     } catch {}
 
     try {
-      player.remove();
+      await player.unloadAsync();
     } catch {}
   }
 
@@ -323,12 +294,13 @@ const playAudioOnWeb = async (audioBytes, playbackId, callbacks) => {
 };
 
 const playAudioOnNative = async (audioBytes, playbackId, callbacks) => {
-  const ExpoAudio = getExpoAudio();
+  const ExpoAv = getExpoAv();
   const FileSystem = getExpoFileSystem();
+  const ExpoAudio = ExpoAv?.Audio;
 
   if (
     Platform.OS === "web" ||
-    !ExpoAudio?.createAudioPlayer ||
+    !ExpoAudio?.Sound?.createAsync ||
     !ExpoAudio?.setAudioModeAsync ||
     !FileSystem?.cacheDirectory ||
     !FileSystem?.writeAsStringAsync ||
@@ -352,16 +324,15 @@ const playAudioOnNative = async (audioBytes, playbackId, callbacks) => {
   nativeAudioUri = fileUri;
 
   await ExpoAudio.setAudioModeAsync({
-    allowsRecording: false,
-    interruptionMode: "duckOthers",
-    playsInSilentMode: true,
-    shouldPlayInBackground: false,
+    allowsRecordingIOS: false,
+    playsInSilentModeIOS: true,
+    shouldDuckAndroid: true,
+    staysActiveInBackground: false,
   });
 
-  const player = createNativeAudioPlayerCompat(
-    ExpoAudio,
+  const { sound: player } = await ExpoAudio.Sound.createAsync(
     { uri: fileUri },
-    { keepAudioSessionActive: false, updateInterval: 250 }
+    { shouldPlay: false }
   );
 
   if (!player) {
@@ -369,7 +340,7 @@ const playAudioOnNative = async (audioBytes, playbackId, callbacks) => {
     return false;
   }
 
-  const subscription = player.addListener?.("playbackStatusUpdate", (status) => {
+  player.setOnPlaybackStatusUpdate?.((status) => {
     if (!isActivePlayback(playbackId)) {
       return;
     }
@@ -382,11 +353,11 @@ const playAudioOnNative = async (audioBytes, playbackId, callbacks) => {
 
   if (!isActivePlayback(playbackId)) {
     try {
-      subscription?.remove?.();
+      player.setOnPlaybackStatusUpdate?.(null);
     } catch {}
 
     try {
-      player.remove();
+      await player.unloadAsync();
     } catch {}
 
     await FileSystem.deleteAsync(fileUri, { idempotent: true }).catch(() => {});
@@ -394,10 +365,10 @@ const playAudioOnNative = async (audioBytes, playbackId, callbacks) => {
   }
 
   nativePlayer = player;
-  nativePlayerSubscription = subscription ?? null;
+  nativePlayerSubscription = null;
 
   try {
-    player.play();
+    await player.playAsync();
   } catch (error) {
     await cleanupNativeAudio();
     throw error;

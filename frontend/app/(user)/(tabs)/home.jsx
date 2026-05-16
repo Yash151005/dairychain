@@ -426,7 +426,7 @@ export default function Home() {
       <View style={styles.featuresShell}>
         <View style={styles.featuresHeader}>
           <View style={styles.featuresBadge}>
-            <Ionicons name="sparkles" size={13} color="#ffffff" />
+            <Ionicons name="star" size={13} color="#ffffff" />
             <Text style={styles.featuresBadgeText}>Farmer Smart Tools</Text>
           </View>
           <Text style={styles.featuresTitle}>AI-powered farmer tools</Text>

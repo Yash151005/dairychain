@@ -435,12 +435,14 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
     shadowRadius: 10,
+    boxShadow: "0 4px 10px rgba(172, 201, 174, 0.08)",
     elevation: 2,
   },
   menuItemActive: {
     backgroundColor: "#1f7a35",
     shadowColor: "#1f7a35",
     shadowOpacity: 0.22,
+    boxShadow: "0 0px 10px rgba(31, 122, 53, 0.22)",
   },
   menuIconWrap: {
     width: 44,

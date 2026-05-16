@@ -1,0 +1,21 @@
+{
+  "background_color": "#0D3B1E",
+  "display": "standalone",
+  "lang": "en",
+  "name": "DairyChain",
+  "short_name": "DairyChain",
+  "start_url": "/?utm_source=web_app_manifest",
+  "orientation": "portrait",
+  "related_applications": [
+    {
+      "platform": "itunes",
+      "id": "com.smartshetakari.app"
+    },
+    {
+      "platform": "play",
+      "url": "http://play.google.com/store/apps/details?id=com.smartshetakari.app",
+      "id": "com.smartshetakari.app"
+    }
+  ],
+  "prefer_related_applications": true
+}

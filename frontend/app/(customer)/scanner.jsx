@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { CameraView, useCameraPermissions } from "expo-camera";
+import { Camera } from "expo-camera";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -15,7 +15,15 @@ import {
 import { qrApi } from "../../utils/api";
 
 function qualityColor(q) {
-  const s = (q || "").toLowerCase();
+  let value = "";
+  if (typeof q === "string") {
+    value = q;
+  } else if (q && typeof q === "object") {
+    value = String(q?.quality || q?.name || q?.value || "");
+  } else if (q) {
+    value = String(q);
+  }
+  const s = (value || "").toLowerCase();
   if (s.includes("pure") || s.includes("good")) return "#2e7d32";
   if (s.includes("suspicious") || s.includes("fair")) return "#f59e0b";
   if (s.includes("adulterated") || s.includes("poor")) return "#dc2626";
@@ -23,7 +31,15 @@ function qualityColor(q) {
 }
 
 function safetyColor(s) {
-  const value = (s || "").toLowerCase();
+  let safetyVal = "";
+  if (typeof s === "string") {
+    safetyVal = s;
+  } else if (s && typeof s === "object") {
+    safetyVal = String(s?.safety || s?.name || s?.value || "");
+  } else if (s) {
+    safetyVal = String(s);
+  }
+  const value = (safetyVal || "").toLowerCase();
   if (value === "green") return "#2e7d32";
   if (value === "yellow") return "#f59e0b";
   if (value === "red") return "#dc2626";
@@ -257,7 +273,7 @@ const RADIUS = 6;
 
 export default function CustomerScanner() {
   const router = useRouter();
-  const [cameraPermission, requestCameraPermission] = useCameraPermissions();
+  const [hasCameraPermission, setHasCameraPermission] = useState(false);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -267,6 +283,14 @@ export default function CustomerScanner() {
 
   useEffect(() => {
     (async () => {
+      try {
+        const { status } = await Camera.requestCameraPermissionsAsync();
+        setHasCameraPermission(status === "granted");
+      } catch (err) {
+        // On web or if permissions fail, still allow manual entry
+        setHasCameraPermission(false);
+      }
+
       try {
         await qrApi.seedDemo();
       } catch {
@@ -283,6 +307,15 @@ export default function CustomerScanner() {
       }
     })();
   }, []);
+
+  const requestCameraPermission = async () => {
+    try {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      setHasCameraPermission(status === "granted");
+    } catch (err) {
+      setHasCameraPermission(false);
+    }
+  };
 
   const resetScanner = () => {
     isHandlingScanRef.current = false;
@@ -347,18 +380,17 @@ export default function CustomerScanner() {
           { batch_id: "MILK-ARJ01", quality: "Pure", farmer_name: "Arjun Shinde" },
         ];
 
-  const hasCameraAccess = !!cameraPermission?.granted;
   const cameraHint = loading
     ? "Verifying product chain..."
-    : hasCameraAccess
+    : hasCameraPermission
     ? "Align the product QR code inside the frame"
     : "Enable camera access for live QR scanning, or enter a batch ID below.";
 
   return (
     <View style={styles.container}>
       <View style={styles.cameraArea}>
-        {hasCameraAccess ? (
-          <CameraView
+        {hasCameraPermission && !loading ? (
+          <Camera
             facing="back"
             style={styles.cameraFeed}
             barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
@@ -372,7 +404,6 @@ export default function CustomerScanner() {
         )}
 
         <LinearGradient
-          pointerEvents="none"
           colors={["rgba(0,0,0,0.18)", "rgba(0,0,0,0.42)"]}
           style={styles.cameraShade}
         />
@@ -402,7 +433,7 @@ export default function CustomerScanner() {
 
           {loading ? (
             <ActivityIndicator size="large" color="#7ce37c" />
-          ) : !hasCameraAccess ? (
+          ) : !hasCameraPermission ? (
             <Ionicons name="camera-outline" size={54} color="rgba(255,255,255,0.28)" />
           ) : (
             <View style={styles.focusDot} />
@@ -426,7 +457,7 @@ export default function CustomerScanner() {
               on the package.
             </Text>
 
-            {!hasCameraAccess && (
+            {!hasCameraPermission && (
               <TouchableOpacity
                 style={styles.permissionCard}
                 onPress={() => {
@@ -538,6 +569,7 @@ const styles = StyleSheet.create({
   },
   cameraShade: {
     ...StyleSheet.absoluteFillObject,
+    pointerEvents: "none",
   },
   backBtn: {
     position: "absolute",
